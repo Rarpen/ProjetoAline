@@ -152,7 +152,7 @@ main {
 /* Alerta customizado */
 #custom-alert {
   position: fixed;
-  top: 20px;
+  top: 80px;
   right: 20px;
   background: #ff6600;
   color: white;
@@ -165,4 +165,34 @@ main {
   transform: translateY(-20px);
   transition: opacity 0.4s ease, transform 0.4s ease;
   z-index: 9999;
+}
+
+/* Estilo para vídeos marcados como assistidos */
+.video-card.assistido {
+  border: 2px solid #4CAF50;
+  background-color: #eaffea;
+  opacity: 0.95;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+/* Botão de marcar como assistido */
+.assistido-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.assistido-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Quando vídeo está assistido, muda o botão */
+.video-card.assistido .assistido-btn {
+  background-color: #4CAF50;
+  font-weight: bold;
 }

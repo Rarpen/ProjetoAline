@@ -78,36 +78,49 @@
       videoCard.classList.add('video-card');
       videoCard.dataset.videoId = videoCount;
 
-      videoCard.innerHTML = `
-        <div class="video-placeholder">
-          <iframe 
-            width="560" 
-            height="315" 
-            src="https://www.youtube.com/embed/${videoID}" 
-            title="YouTube video player" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div class="video-details">
-
-          <p>Descrição rápida do vídeo ${videoCount}.</p>
-          <div class="rating" data-video-id="${videoCount}">
-            <span class="star" data-value="1">&#9733;</span>
-            <span class="star" data-value="2">&#9733;</span>
-            <span class="star" data-value="3">&#9733;</span>
-            <span class="star" data-value="4">&#9733;</span>
-            <span class="star" data-value="5">&#9733;</span>
-          </div>
-        </div>
-        <div class="comment-section">
-          <input type="text" placeholder="Deixe um comentário..." />
-          <div class="comment-list"></div>
-        </div>
-      `;
+videoCard.innerHTML = `
+  <div class="video-placeholder">
+    <iframe 
+      width="560" 
+      height="315" 
+      src="https://www.youtube.com/embed/${videoID}" 
+      title="YouTube video player" 
+      frameborder="0" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      allowfullscreen>
+    </iframe>
+  </div>
+  <div class="video-details">
+    <p>Descrição rápida do vídeo ${videoCount}.</p>
+    <button class="assistido-btn">Marcar como assistido</button>
+    <div class="rating" data-video-id="${videoCount}">
+      <span class="star" data-value="1">&#9733;</span>
+      <span class="star" data-value="2">&#9733;</span>
+      <span class="star" data-value="3">&#9733;</span>
+      <span class="star" data-value="4">&#9733;</span>
+      <span class="star" data-value="5">&#9733;</span>
+    </div>
+  </div>
+  <div class="comment-section">
+    <input type="text" placeholder="Deixe um comentário..." />
+    <div class="comment-list"></div>
+  </div>
+`;
 
       videoContainer.appendChild(videoCard);
+
+      const btnAssistido = videoCard.querySelector('.assistido-btn');
+btnAssistido.addEventListener('click', () => {
+  videoCard.classList.toggle('assistido');
+  if (videoCard.classList.contains('assistido')) {
+    btnAssistido.textContent = 'Assistido';
+    showAlert(`Vídeo ${videoCount} marcado como assistido.`);
+  } else {
+    btnAssistido.textContent = 'Marcar como assistido';
+    showAlert(`Vídeo ${videoCount} desmarcado como assistido.`);
+  }
+});
+
 
       // Adicionar evento para comentários
       const inputComentario = videoCard.querySelector('.comment-section input[type="text"]');
@@ -179,6 +192,8 @@
         alertaPeriodico();
       }, intervalo);
     }
+
+    
 
     window.onload = () => {
       alertaPeriodico();
