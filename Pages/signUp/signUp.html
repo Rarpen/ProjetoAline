@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Colaborador</title>
+  <link rel="stylesheet" href="signUp.css">
+</head>
+<body>
+  <div class="login-container">
+    <h2>Cadastro</h2>
+    <form action="../signIn/signIn.html" method="post">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+
+      <label for="cpf">CPF:</label>
+      <input type="text" id="cpf" name="cpf" required>
+
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" name="senha" required>
+
+      <label for="codigo">Código de Colaborador:</label>
+      <input type="text" id="codigo" name="codigo" readonly>
+
+      <button type="submit">Cadastrar</button>
+    </form>
+  </div>
+
+  <script>
+    // Gera um código de colaborador aleatório ao abrir a página
+    function gerarCodigoColaborador() {
+      const numero = Math.floor(10000 + Math.random() * 90000);
+      return 'COL' + numero;
+    }
+
+    window.onload = () => {
+      document.getElementById('codigo').value = gerarCodigoColaborador();
+    };
+  </script>
+</body>
+</html>

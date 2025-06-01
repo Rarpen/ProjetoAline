@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home - Plataforma de Vídeos</title>
+  <link rel="stylesheet" href="home.css" />
+</head>
+<body>
+  <header>
+    <div class="header-left">TrainEase</div>
+    <div class="header-right">
+      <button id="help-session-btn">Sessão de Ajuda</button>
+      <button id="upload-video-btn">Upload de Vídeo</button>
+      <button id="request-help-btn">Solicitar Ajuda</button>
+      <button id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <main id="video-container">
+    <!-- Os vídeos vão aparecer aqui -->
+  </main>
+
+  <div id="custom-alert"></div>
+
+  <script>
+    // Logout redireciona para signin
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      window.location.href = '../signin/signin.html';
+    });
+
+    // Função para mostrar alerta customizado
+    function showAlert(message) {
+      const alertBox = document.getElementById('custom-alert');
+      alertBox.textContent = message;
+      alertBox.style.opacity = '1';
+      alertBox.style.pointerEvents = 'auto';
+      alertBox.style.transform = 'translateY(0)';
+
+      setTimeout(() => {
+        alertBox.style.opacity = '0';
+        alertBox.style.pointerEvents = 'none';
+        alertBox.style.transform = 'translateY(-20px)';
+      }, 3000);
+    }
+
+    // Alertas para outros botões
+    document.getElementById('help-session-btn').addEventListener('click', () => {
+      showAlert('Sessão de ajuda iniciada!');
+    });
+
+    document.getElementById('request-help-btn').addEventListener('click', () => {
+      showAlert('Solicitação de ajuda enviada!');
+    });
+
+    // Variável para contar vídeos
+    let videoCount = 0;
+
+    // Extrai o ID do vídeo do link do YouTube
+    function extrairIDYoutube(url) {
+      const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|embed)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    }
+
+    // Cria um card de vídeo no main
+    function criarVideoCard(youtubeLink) {
+      const videoID = extrairIDYoutube(youtubeLink);
+      if (!videoID) {
+        showAlert('Link inválido do YouTube!');
+        return;
+      }
+
+      videoCount++;
+
+      const videoContainer = document.getElementById('video-container');
+
+      const videoCard = document.createElement('div');
+      videoCard.classList.add('video-card');
+      videoCard.dataset.videoId = videoCount;
+
+      videoCard.innerHTML = `
+        <div class="video-placeholder">
+          <iframe 
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/${videoID}" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="video-details">
+
+          <p>Descrição rápida do vídeo ${videoCount}.</p>
+          <div class="rating" data-video-id="${videoCount}">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+          </div>
+        </div>
+        <div class="comment-section">
+          <input type="text" placeholder="Deixe um comentário..." />
+          <div class="comment-list"></div>
+        </div>
+      `;
+
+      videoContainer.appendChild(videoCard);
+
+      // Adicionar evento para comentários
+      const inputComentario = videoCard.querySelector('.comment-section input[type="text"]');
+      const listaComentarios = videoCard.querySelector('.comment-list');
+
+      inputComentario.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const text = this.value.trim();
+          if (text.length === 0) return;
+
+          const newComment = document.createElement('p');
+          newComment.textContent = text;
+          newComment.classList.add('comment-item');
+
+          listaComentarios.appendChild(newComment);
+          this.value = '';
+        }
+      });
+
+      // Adicionar sistema de avaliação por estrelas para esse vídeo
+      const ratingDiv = videoCard.querySelector('.rating');
+      const stars = ratingDiv.querySelectorAll('.star');
+      let selectedValue = 0;
+
+      stars.forEach(star => {
+        star.addEventListener('mouseenter', () => {
+          stars.forEach(s => {
+            if (s.dataset.value <= star.dataset.value) {
+              s.classList.add('hover');
+            } else {
+              s.classList.remove('hover');
+            }
+          });
+        });
+
+        star.addEventListener('mouseleave', () => {
+          stars.forEach(s => s.classList.remove('hover'));
+        });
+
+        star.addEventListener('click', () => {
+          selectedValue = parseInt(star.dataset.value);
+          stars.forEach(s => {
+            if (s.dataset.value <= selectedValue) {
+              s.classList.add('selected');
+            } else {
+              s.classList.remove('selected');
+            }
+          });
+          console.log(`Vídeo ${videoCount} avaliado com nota: ${selectedValue}`);
+        });
+      });
+    }
+
+    // Botão upload pede link e cria video
+    document.getElementById('upload-video-btn').addEventListener('click', () => {
+      const youtubeLink = prompt('Cole o link do vídeo do YouTube:');
+      if (youtubeLink) {
+        criarVideoCard(youtubeLink);
+        showAlert('Vídeo adicionado com sucesso!');
+      }
+    });
+
+    // Alerta periódico entre 5 e 10 segundos
+    function alertaPeriodico() {
+      const intervalo = Math.floor(Math.random() * 10000) + 5000;
+      setTimeout(() => {
+        showAlert('Um vídeo novo foi enviado por email');
+        alertaPeriodico();
+      }, intervalo);
+    }
+
+    window.onload = () => {
+      alertaPeriodico();
+
+      // Opcional: criar um vídeo inicial
+      criarVideoCard('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    };
+  </script>
+</body>
+</html>
