@@ -17,25 +17,33 @@
   </header>
 
   <main id="video-container">
-    <!-- Os vídeos vão aparecer aqui -->
+    <section class="categoria" id="categoria-tecnica">
+      <h2>Técnica</h2>
+      <div class="videos"></div>
+    </section>
+    <section class="categoria" id="categoria-atendimento">
+      <h2>Atendimento</h2>
+      <div class="videos"></div>
+    </section>
+    <section class="categoria" id="categoria-seguranca">
+      <h2>Segurança</h2>
+      <div class="videos"></div>
+    </section>
   </main>
 
   <div id="custom-alert"></div>
 
   <script>
-    // Logout redireciona para signin
     document.getElementById('logout-btn').addEventListener('click', () => {
       window.location.href = '../signin/signin.html';
     });
 
-    // Função para mostrar alerta customizado
     function showAlert(message) {
       const alertBox = document.getElementById('custom-alert');
       alertBox.textContent = message;
       alertBox.style.opacity = '1';
       alertBox.style.pointerEvents = 'auto';
       alertBox.style.transform = 'translateY(0)';
-
       setTimeout(() => {
         alertBox.style.opacity = '0';
         alertBox.style.pointerEvents = 'none';
@@ -43,7 +51,6 @@
       }, 3000);
     }
 
-    // Alertas para outros botões
     document.getElementById('help-session-btn').addEventListener('click', () => {
       showAlert('Sessão de ajuda iniciada!');
     });
@@ -52,77 +59,78 @@
       showAlert('Solicitação de ajuda enviada!');
     });
 
-    // Variável para contar vídeos
     let videoCount = 0;
 
-    // Extrai o ID do vídeo do link do YouTube
     function extrairIDYoutube(url) {
       const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|embed)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
       const match = url.match(regex);
       return match ? match[1] : null;
     }
 
-    // Cria um card de vídeo no main
-    function criarVideoCard(youtubeLink) {
+    function criarVideoCard(youtubeLink, categoria) {
       const videoID = extrairIDYoutube(youtubeLink);
       if (!videoID) {
         showAlert('Link inválido do YouTube!');
         return;
       }
 
-      videoCount++;
+      const categoriaID = `categoria-${categoria.toLowerCase()}`;
+      const section = document.getElementById(categoriaID);
+      if (!section) {
+        showAlert('Categoria não encontrada!');
+        return;
+      }
 
-      const videoContainer = document.getElementById('video-container');
+      const container = section.querySelector('.videos');
+      videoCount++;
 
       const videoCard = document.createElement('div');
       videoCard.classList.add('video-card');
       videoCard.dataset.videoId = videoCount;
 
-videoCard.innerHTML = `
-  <div class="video-placeholder">
-    <iframe 
-      width="560" 
-      height="315" 
-      src="https://www.youtube.com/embed/${videoID}" 
-      title="YouTube video player" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-      allowfullscreen>
-    </iframe>
-  </div>
-  <div class="video-details">
-    <p>Descrição rápida do vídeo ${videoCount}.</p>
-    <button class="assistido-btn">Marcar como assistido</button>
-    <div class="rating" data-video-id="${videoCount}">
-      <span class="star" data-value="1">&#9733;</span>
-      <span class="star" data-value="2">&#9733;</span>
-      <span class="star" data-value="3">&#9733;</span>
-      <span class="star" data-value="4">&#9733;</span>
-      <span class="star" data-value="5">&#9733;</span>
-    </div>
-  </div>
-  <div class="comment-section">
-    <input type="text" placeholder="Deixe um comentário..." />
-    <div class="comment-list"></div>
-  </div>
-`;
+      videoCard.innerHTML = `
+        <div class="video-placeholder">
+          <iframe 
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/${videoID}" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="video-details">
+          <p>Descrição rápida do vídeo ${videoCount}.</p>
+          <button class="assistido-btn">Marcar como assistido</button>
+          <div class="rating" data-video-id="${videoCount}">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+          </div>
+        </div>
+        <div class="comment-section">
+          <input type="text" placeholder="Deixe um comentário..." />
+          <div class="comment-list"></div>
+        </div>
+      `;
 
-      videoContainer.appendChild(videoCard);
+      container.appendChild(videoCard);
 
       const btnAssistido = videoCard.querySelector('.assistido-btn');
-btnAssistido.addEventListener('click', () => {
-  videoCard.classList.toggle('assistido');
-  if (videoCard.classList.contains('assistido')) {
-    btnAssistido.textContent = 'Assistido';
-    showAlert(`Vídeo ${videoCount} marcado como assistido.`);
-  } else {
-    btnAssistido.textContent = 'Marcar como assistido';
-    showAlert(`Vídeo ${videoCount} desmarcado como assistido.`);
-  }
-});
+      btnAssistido.addEventListener('click', () => {
+        videoCard.classList.toggle('assistido');
+        if (videoCard.classList.contains('assistido')) {
+          btnAssistido.textContent = 'Assistido';
+          showAlert(`Vídeo ${videoCount} marcado como assistido.`);
+        } else {
+          btnAssistido.textContent = 'Marcar como assistido';
+          showAlert(`Vídeo ${videoCount} desmarcado como assistido.`);
+        }
+      });
 
-
-      // Adicionar evento para comentários
       const inputComentario = videoCard.querySelector('.comment-section input[type="text"]');
       const listaComentarios = videoCard.querySelector('.comment-list');
 
@@ -131,17 +139,14 @@ btnAssistido.addEventListener('click', () => {
           event.preventDefault();
           const text = this.value.trim();
           if (text.length === 0) return;
-
           const newComment = document.createElement('p');
           newComment.textContent = text;
           newComment.classList.add('comment-item');
-
           listaComentarios.appendChild(newComment);
           this.value = '';
         }
       });
 
-      // Adicionar sistema de avaliação por estrelas para esse vídeo
       const ratingDiv = videoCard.querySelector('.rating');
       const stars = ratingDiv.querySelectorAll('.star');
       let selectedValue = 0;
@@ -175,16 +180,20 @@ btnAssistido.addEventListener('click', () => {
       });
     }
 
-    // Botão upload pede link e cria video
     document.getElementById('upload-video-btn').addEventListener('click', () => {
       const youtubeLink = prompt('Cole o link do vídeo do YouTube:');
-      if (youtubeLink) {
-        criarVideoCard(youtubeLink);
-        showAlert('Vídeo adicionado com sucesso!');
+      if (!youtubeLink) return;
+
+      const categoria = prompt('Digite a categoria (tecnica, atendimento, seguranca):').toLowerCase();
+      if (!['tecnica', 'atendimento', 'seguranca'].includes(categoria)) {
+        showAlert('Categoria inválida!');
+        return;
       }
+
+      criarVideoCard(youtubeLink, categoria);
+      showAlert('Vídeo adicionado com sucesso!');
     });
 
-    // Alerta periódico entre 5 e 10 segundos
     function alertaPeriodico() {
       const intervalo = Math.floor(Math.random() * 10000) + 5000;
       setTimeout(() => {
@@ -193,13 +202,9 @@ btnAssistido.addEventListener('click', () => {
       }, intervalo);
     }
 
-    
-
     window.onload = () => {
       alertaPeriodico();
-
-      // Opcional: criar um vídeo inicial
-      criarVideoCard('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+      criarVideoCard('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'tecnica');
     };
   </script>
 </body>
